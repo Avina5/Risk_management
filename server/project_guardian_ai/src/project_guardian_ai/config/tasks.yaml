@@ -1,0 +1,71 @@
+market_analysis_task:
+  description: >
+    Analyse external risk factors for project "{project_name}" (client: {client},
+    budget: ${budget}, end date: {end_date}).
+    Focus on: regulatory changes, market volatility, supply chain risks,
+    and competitive pressures relevant to this project's domain.
+    Primary risk factor reported: {primary_risk_factor}.
+    Return a structured analysis with severity (critical/warning/stable),
+    a risk score (0-100), and 2-3 specific mitigation recommendations.
+  expected_output: >
+    A JSON-compatible markdown report with: risk_type, severity, score (int),
+    description (2-3 sentences), and mitigation_strategies (list of 3 items).
+  agent: market_analysis_agent
+
+risk_scoring_task:
+  description: >
+    Compute a composite risk score for project "{project_name}".
+    Current data: risk_score={risk_score}, trend={risk_trend},
+    status={status}, primary_risk_factor={primary_risk_factor}.
+    Weigh the following dimensions: payment risk (30%), resource risk (25%),
+    schedule risk (25%), market risk (20%).
+    Justify each dimension score and produce a final weighted composite.
+  expected_output: >
+    A structured breakdown with: payment_score, resource_score, schedule_score,
+    market_score, composite_score (int 0-100), trend (up/down/stable),
+    and a 2-sentence executive summary.
+  agent: risk_scoring_agent
+
+project_tracking_task:
+  description: >
+    Assess the schedule and resource health of project "{project_name}".
+    Project details: start={start_date}, end={end_date}, budget=${budget},
+    PM={project_manager}, status={status}.
+    Identify: velocity trends, resource gaps, scope creep indicators,
+    and milestone risks. Flag any items requiring immediate attention.
+  expected_output: >
+    A health report with: overall_health (green/amber/red), velocity_trend,
+    resource_risk (low/medium/high), scope_risk (low/medium/high),
+    key_concerns (list), and recommended_actions (list of 3).
+  agent: project_tracking_agent
+
+reporting_task:
+  description: >
+    Synthesise all risk findings for project "{project_name}" into an
+    executive risk report. Combine market analysis, risk scores, and
+    project tracking insights into a single coherent narrative.
+    Portfolio context: {portfolio_context}.
+  expected_output: >
+    A markdown executive report with sections: Executive Summary,
+    Risk Score & Trend, Key Risk Factors (table), Mitigation Plan
+    (prioritised list), and Next Review Date.
+  agent: reporting_agent
+  context:
+    - market_analysis_task
+    - risk_scoring_task
+    - project_tracking_task
+
+chat_task:
+  description: >
+    Answer the following user question about the project portfolio:
+    "{user_message}"
+
+    Portfolio summary for context:
+    {portfolio_context}
+
+    Be concise, accurate, and actionable. Use markdown formatting.
+    If the question is about a specific project, focus on that project's data.
+  expected_output: >
+    A helpful, concise markdown response (max 300 words) that directly
+    answers the user's question with specific data points where available.
+  agent: chat_agent
